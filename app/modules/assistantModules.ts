@@ -113,12 +113,12 @@ export const readUploadedFile = async (file: File, setStatusMessage: (message: s
 
 
 /**
-* Initializes a chat assistant with the given details.
-* @param {Object} assistantDetails - Details of the assistant to be created.
-* @param {string} fileId - The ID of the uploaded file associated with the assistant.
-* @returns {Promise<string>} - The ID of the created assistant.
-*/
-export const initializeAssistant = async (assistantDetails: AssistantDetails, fileIds: string[]): Promise<string> => {
+ * Initializes a chat assistant with the given details.
+ * @param {Object} assistantDetails - Details of the assistant to be created.
+ * @param fileIds
+ * @returns {Promise<string>} - The ID of the created assistant.
+ */
+export const initializeAssistant = async (assistantDetails: AssistantDetails, fileIds: Awaited<{ description: any; fileId: string }>[]): Promise<string> => {
   console.log('Initializing assistant...');
   
   // Log the assistantDetails and fileIds
