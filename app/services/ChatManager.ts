@@ -272,7 +272,7 @@ class ChatManager {
 
       console.log('Assistant response:', response)
       // Add the assistant's response to the messages
-      const newAssistantMessage = { role: 'assistant', content: response.messages, file: response.image_path };
+      const newAssistantMessage = { role: 'assistant', content: response?.messages, file: response?.image_path };
       this.state.messages = [...this.state.messages, newAssistantMessage];
       this.state.setChatMessages(this.state.messages);
       console.log('asdasdasdasdasd')
