@@ -267,12 +267,12 @@ class ChatManager {
       console.log('Assistant run successfully. Fetching assistant response...');
 
       // Fetch the assistant's response
-      const response = await fetchAssistantResponseWithFile(this.state.runId as string, this.state.threadId as string, this.state.setStatusMessage, this.state.setProgress,0);
+      const response = await fetchAssistantResponse(this.state.runId as string, this.state.threadId as string, this.state.setStatusMessage, this.state.setProgress,0);
       console.log('Assistant response fetched. Adding to chat state...');
 
       console.log('Assistant response:', response)
       // Add the assistant's response to the messages
-      const newAssistantMessage = { role: 'assistant', content: response?.messages, file: response?.image_path };
+      const newAssistantMessage = { role: 'assistant', content: response };
       this.state.messages = [...this.state.messages, newAssistantMessage];
       this.state.setChatMessages(this.state.messages);
       console.log('asdasdasdasdasd')
