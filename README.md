@@ -32,10 +32,7 @@ Please note that this application is currently in the beta phase and is continuo
 - An active OpenAI API key.
 
 ### Installation
-1. **Clone the Repository**:
-   ```
-   git clone https://github.com/admineral/OpenAI-Assistant-API-Chat.git
-   ```
+1. **Clone the Repository**
 2. **Install Dependencies**:
    Navigate to the project directory and run:
    ```

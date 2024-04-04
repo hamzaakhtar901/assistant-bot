@@ -4,6 +4,7 @@ import { Bot, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ImageIcon, DocumentIcon } from '../icons';
+import Image from "next/image";
 
 // Message component to display individual messages
 const Message = ({ message, progress, isFirstMessage, fileDetails }) => {
@@ -34,8 +35,11 @@ const Message = ({ message, progress, isFirstMessage, fileDetails }) => {
           </>
         ) : (
           <div className="flex flex-col w-full">
+            {message.file && (
+                <Image src={message.file} alt="Uploaded file" className="your-custom-classname" width={200} height={200}/>
+            )}
             <ReactMarkdown
-              className="prose mt-1 break-words prose-p:leading-relaxed"
+              className="prose mt-1 break-words prose-p:leading-relaxed herere"
               remarkPlugins={[remarkGfm]}
               components={{
                 a: (props) => (

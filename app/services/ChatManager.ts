@@ -9,7 +9,7 @@ import {
 import {
   submitUserMessage,
   fetchAssistantResponse,
-  updateChatState
+  updateChatState, fetchAssistantResponseWithFile
 } from '../modules/chatModules';
 
 /**
@@ -59,7 +59,7 @@ class ChatManager {
     };
     console.log('ChatManager initialized');
   }
-  
+
   // Method to get the current messages
   public getCurrentMessages(): any[] {
     return this.state.messages;
@@ -76,10 +76,10 @@ class ChatManager {
   // Method to start the assistant
   async startAssistant(assistantDetails: any, files: File[] | null, initialMessage: string): Promise<void> {
     console.log('Starting assistant...');
-    
+
     this.state.setStatusMessage('Initializing chat assistant...');
     this.state.isLoading = true;
-    
+
     try {
       // Upload the files
       this.state.setStatusMessage('Starting upload...');
@@ -90,7 +90,7 @@ class ChatManager {
         throw new Error('One or more file IDs are null');
       }
       this.state.setStatusMessage('Upload complete..');
-    
+
       // Initialize the assistant
       this.state.setStatusMessage('Create Assistant...');
       const assistantId = await initializeAssistant(assistantDetails, fileIds);
@@ -98,7 +98,7 @@ class ChatManager {
         throw new Error('AssistantId is null');
       }
       this.state.setStatusMessage('Assistant created...');
-  
+
       // Create the chat thread
       this.state.setStatusMessage('Creating thread...');
       this.state.assistantId = assistantId;
@@ -107,7 +107,7 @@ class ChatManager {
         throw new Error('ThreadId is null');
       }
       this.state.setStatusMessage('Received thread_ID...');
-  
+
       // Run the assistant
       this.state.setStatusMessage('Running assistant...');
       this.state.threadId = threadId;
@@ -115,38 +115,38 @@ class ChatManager {
       if (runId === null) {
         throw new Error('RunId is null');
       }
-      
+
       // Store the run ID
-      this.state.runId = runId; 
+      this.state.runId = runId;
       this.state.setStatusMessage('Received Run_ID..');
-  
+
       // Fetch the assistant's response
       if (this.state.runId && this.state.threadId) {
         const runId = this.state.runId as string;
         const threadId = this.state.threadId as string;
         this.state.setStatusMessage('checking status...');
         const response = await fetchAssistantResponse(
-          this.state.runId as string, 
-          this.state.threadId as string, 
-          this.state.setStatusMessage, 
+          this.state.runId as string,
+          this.state.threadId as string,
+          this.state.setStatusMessage,
           this.state.setProgress,
           40 // initialProgress
-        );        
+        );
         this.state.setStatusMessage('Run complete...');
         this.state.assistantResponseReceived = true;
         this.state.setStatusMessage('Received messages...');
-        
+
         // Add the assistant's response to the messages
         const newMessage = { role: 'assistant', content: response };
         this.state.setStatusMessage('Adding messages to chat...');
-        
+
         this.state.messages = [...this.state.messages, newMessage];
         this.state.setChatMessages(this.state.messages);
 
       } else {
         console.error('RunId or ThreadId is null. Current state:', this.state);
       }
-  
+
     } catch (error) {
       // Handle any errors
       this.state.error = error as Error;
@@ -159,8 +159,8 @@ class ChatManager {
     }
   }
 
-// Method to start the assistant with a given ID
-async startAssistantWithId(assistantId: string, initialMessage: string): Promise<void> {
+  // Method to start the assistant with a given ID
+  async startAssistantWithId(assistantId: string, initialMessage: string): Promise<void> {
   try {
 
     this.state.setIsLoadingFirstMessage(true);
@@ -184,7 +184,7 @@ async startAssistantWithId(assistantId: string, initialMessage: string): Promise
       throw new Error('RunId is null');
     }
 
-    this.state.runId = runId; 
+    this.state.runId = runId;
     this.state.setStatusMessage('Received Run_ID..');
     this.state.setProgress(40); // Set progress to 40%
 
@@ -194,15 +194,15 @@ async startAssistantWithId(assistantId: string, initialMessage: string): Promise
       const threadId = this.state.threadId as string;
       this.state.setStatusMessage('checking status...');
       const assistantResponse = await fetchAssistantResponse(runId, threadId, this.state.setStatusMessage, this.state.setProgress, 10);
-      
+
       this.state.setStatusMessage('Run complete...');
       this.state.assistantResponseReceived = true;
       this.state.setStatusMessage('Received messages...');
-      
+
       // Add the assistant's response to the messages
       const newMessage = { role: 'assistant', content: assistantResponse };
       this.state.setStatusMessage('Adding messages to chat...');
-      
+
       this.state.messages = [...this.state.messages, newMessage];
       this.state.setChatMessages(this.state.messages);
       this.state.setIsLoadingFirstMessage(false);
@@ -224,49 +224,58 @@ async startAssistantWithId(assistantId: string, initialMessage: string): Promise
   }
 }
 
-// Method to send a message
-async sendMessage(input: string, files: File[], fileDetails: any[]): Promise<void> { // Add a new parameter for the files
+  // Method to send a message
+  async sendMessage(input: string, files: File[], fileDetails: any[]): Promise<void> { // Add a new parameter for the files
   console.log('Sending message...');
   this.state.setProgress(0);
-  this.state.isSending = true; 
+  this.state.isSending = true;
   const newUserMessage = { role: 'user', content: input, fileDetails: fileDetails };
   this.state.messages = [...this.state.messages, newUserMessage];
   this.state.setChatMessages(this.state.messages);
 
   try {
-    if (this.state.threadId && this.state.assistantId) { 
-      
+    if (this.state.threadId && this.state.assistantId) {
+
       // Upload the files if there are any
-      let ChatFileIds: string[] = [];
+      let ChatFile: any = '';
+      let ChatFileIds: any = ''
       if (files.length > 0) {
         this.state.setStatusMessage('Starting upload...');
         console.log('Files in Chat:', files);
-        ChatFileIds = await Promise.all(files.map(file => prepareUploadFile(file, this.state.setStatusMessage)));
+        ChatFile = await Promise.all(files.map(file => prepareUploadFile(file, this.state.setStatusMessage)));
+        console.log('File upload response:', ChatFile[0]['fileId']);
+        ChatFile = ChatFile[0]
+        ChatFileIds = [ChatFile['fileId']]
         console.log('File IDs during Chat:', ChatFileIds);
         if (ChatFileIds.map(String).includes('null')) {
           throw new Error('One or more file IDs are null');
         }
         this.state.setStatusMessage('Upload complete..');
       }
-      console.log('File IDs during Chat:', ChatFileIds);
+
       // Submit the user's message
-      await submitUserMessage(input, this.state.threadId, this.state.setStatusMessage, ChatFileIds); // Pass the file IDs here
+      console.log('Submitting user message with files:', ChatFile['description']);
+      let msgInput = `understand that this description is provided by you, now: ${input}: ${ChatFile['description']}`
+      if (typeof ChatFile['description'] == 'undefined') {
+        msgInput = input
+      }
+      await submitUserMessage(msgInput, this.state.threadId, this.state.setStatusMessage, []); // Pass the file IDs here
       console.log('User message submitted. Running assistant...');
-      
+
       // Run the assistant
       this.state.runId = await runChatAssistant(this.state.assistantId as string, this.state.threadId as string);
       console.log('Assistant run successfully. Fetching assistant response...');
-      
+
       // Fetch the assistant's response
-      const response = await fetchAssistantResponse(this.state.runId as string, this.state.threadId as string, this.state.setStatusMessage, this.state.setProgress,0);
+      const response = await fetchAssistantResponseWithFile(this.state.runId as string, this.state.threadId as string, this.state.setStatusMessage, this.state.setProgress,0);
       console.log('Assistant response fetched. Adding to chat state...');
-      
-      
+
+      console.log('Assistant response:', response)
       // Add the assistant's response to the messages
-      const newAssistantMessage = { role: 'assistant', content: response };
+      const newAssistantMessage = { role: 'assistant', content: response.messages, file: response.image_path };
       this.state.messages = [...this.state.messages, newAssistantMessage];
       this.state.setChatMessages(this.state.messages);
-      
+      console.log('asdasdasdasdasd')
     } else {
       console.error('ThreadId or AssistantId is null');
     }
@@ -277,7 +286,7 @@ async sendMessage(input: string, files: File[], fileDetails: any[]): Promise<voi
   } finally {
     // Finalize the operation
     this.state.setProgress(0);
-    this.state.isSending = false; 
+    this.state.isSending = false;
   }
 }
 

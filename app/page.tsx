@@ -34,7 +34,7 @@ export default function Chat() {
   } = useChatState();
 
 
-  console.log('ini message:', initialThreadMessage)
+  //console.log('ini message:', initialThreadMessage)
 
   useChatManager(setChatMessages, setStatusMessage, setChatManager, setIsMessageLoading, setProgress, setIsLoadingFirstMessage);
   useStartAssistant(assistantId, chatManager, initialThreadMessage);

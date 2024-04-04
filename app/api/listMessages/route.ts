@@ -11,6 +11,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from "openai";
+import fs from "fs";
 
 // Initialize OpenAI client using the API key from environment variables
 const openai = new OpenAI({
@@ -51,11 +52,53 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No assistant message content found" });
     }
 
-    if (assistantMessageContent.type !== "text") {
-      return NextResponse.json({ error: "Assistant message is not text, only text supported in this demo" });
+    /*if (assistantMessageContent.type !== "text") {
+      console.log('assistantMessageContent.type', assistantMessageContent.type)
+      return NextResponse.json({ error: "Assistant message is not text, only text supported in this demo", data: assistantMessageContent });
+    }*/
+
+    if (assistantMessageContent.type === "image_file") {
+      console.log(assistantMessageContent.image_file.file_id)
+      const fileId = assistantMessageContent.image_file.file_id
+      const file = await openai.files.content(fileId);
+      const bufferView = new Uint8Array(await file.arrayBuffer());
+
+      console.log(bufferView);
+
+      fs.writeFileSync('./public/file-kqzPeg6MhD0HoCaDnaK3XSJN.png', bufferView);
+      return NextResponse.json({
+        ok: true,
+        messages: '',
+        file: fileId,
+        image_path: '/file-kqzPeg6MhD0HoCaDnaK3XSJN.png',
+        open_ai: assistantMessageContent
+      });
+      //return NextResponse.json({ error: "Assistant message is not text, only text supported in this demo", data: assistantMessageContent });
     }
+
+    let response = {
+      ok: true,
+      messages: assistantMessageContent.text.value
+    }
+
+    if (assistantMessageContent.text.annotations.length) {
+      const fileId = assistantMessageContent.text.annotations[0].file_path.file_id
+      response = {
+        ok: true,
+        messages: assistantMessageContent.text.value,
+        file: fileId,
+        open_ai: assistantMessageContent,
+        image_path: '/file-kqzPeg6MhD0HoCaDnaK3XSJN.png',
+      }
+
+      const file = await openai.files.content(fileId);
+      const bufferView = new Uint8Array(await file.arrayBuffer());
+
+      fs.writeFileSync('./public/file-kqzPeg6MhD0HoCaDnaK3XSJN.png', bufferView);
+    }
+    //console.log('response', response, assistantMessageContent.text.annotations[0])
     // Return the retrieved messages as a JSON response
-    return NextResponse.json({ ok: true, messages: assistantMessageContent.text.value });
+    return NextResponse.json(response);
   } catch (error) {
     // Log any errors that occur during the process
     console.error(`Error occurred: ${error}`);
