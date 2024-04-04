@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
       messages: assistantMessageContent.text.value
     }
 
-    if (assistantMessageContent.text.annotations.length) {
+    /*if (assistantMessageContent.text.annotations.length) {
       const fileId = assistantMessageContent.text.annotations[0]?.file_path?.file_id
       response = {
         ok: true,
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
       const bufferView = new Uint8Array(await file.arrayBuffer());
 
       fs.writeFileSync('./public/file-kqzPeg6MhD0HoCaDnaK3XSJN.png', bufferView);
-    }
+    }*/
     //console.log('response', response, assistantMessageContent.text.annotations[0])
     // Return the retrieved messages as a JSON response
     return NextResponse.json(response);
