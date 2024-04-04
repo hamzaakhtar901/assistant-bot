@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (assistantMessageContent.text.annotations.length) {
-      const fileId = assistantMessageContent.text.annotations[0]?.file_path.file_id
+      const fileId = assistantMessageContent.text.annotations[0]?.file_path?.file_id
       response = {
         ok: true,
         messages: assistantMessageContent.text.value,
