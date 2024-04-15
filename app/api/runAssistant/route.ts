@@ -19,7 +19,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-global['generateImage'] = async function (prompt) {
+const generateImage = async function (prompt) {
   const response = await openai.images.generate({
     model: "dall-e-3",
     prompt: prompt.prompt,
@@ -87,7 +87,11 @@ export async function POST(req: NextRequest) {
             console.log(`here is args: ${JSON.stringify([args,argsArray])}`)
 
             // Dynamically call the function with arguments
-            const output = await global[functionName].apply(null, [args]);
+            //const output = await global[functionName].apply(null, [args]);
+            let output = '';
+            if (functionName == 'generateImage') {
+              output = await generateImage(args)
+            }
 
             toolOutputs.push({
               tool_call_id: toolCall.id,
