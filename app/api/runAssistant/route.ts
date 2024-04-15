@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
         //   console.log(
         //     runStatus.required_action.submit_tool_outputs.tool_calls
         //   );
-        if ("submit_tool_outputs" in runStatus.required_action) {
+        if (runStatus.required_action !== null && "submit_tool_outputs" in runStatus.required_action) {
           const toolCalls =
               runStatus.required_action.submit_tool_outputs.tool_calls;
 
