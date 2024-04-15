@@ -81,7 +81,6 @@ export async function POST(req: NextRequest) {
             );
 
             const args = JSON.parse(toolCall.function.arguments);
-
             const argsArray = Object.keys(args).map((key) => args[key]);
 
             console.log(`here is args: ${JSON.stringify([args,argsArray])}`)
