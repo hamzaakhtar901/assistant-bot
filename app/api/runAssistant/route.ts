@@ -19,7 +19,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-/*const generateImage = async function (prompt: any) {
+const generateImage = async function (prompt: any) {
   const response = await openai.images.generate({
     model: "dall-e-3",
     prompt: prompt.prompt,
@@ -27,7 +27,7 @@ const openai = new OpenAI({
   });
   console.log(`here are receive image urls: ${JSON.stringify(response.data)}`)
   return JSON.stringify({data: response.data});
-}*/
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       assistant_id: assistantId,
     });
 
-    /*// Immediately fetch run-status, which will be "in_progress"
+    // Immediately fetch run-status, which will be "in_progress"
     let runStatus = await openai.beta.threads.runs.retrieve(
         threadId,
         run.id
@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
         );
         break; // Exit the loop if the status indicates a failure or cancellation
       }
-    }*/
+    }
 
 
     // Logging the details of the created run for debugging. This includes the run ID and any other relevant information.
