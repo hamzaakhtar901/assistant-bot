@@ -116,7 +116,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-
     // Logging the details of the created run for debugging. This includes the run ID and any other relevant information.
     console.log(`run: ${JSON.stringify(run)}`);
 
@@ -127,6 +126,6 @@ export async function POST(req: NextRequest) {
     // Handling and logging any errors that occur during the process. This includes errors in
     // API requests, data extraction, or any other part of the interaction flow.
     console.error(`Error in -runAssistant: ${error}`);
-    return NextResponse.json({ error: 'Failed to run assistant' }, { status: 500 });
+    return NextResponse.json({ error: error }, { status: 500 });
   }
 }

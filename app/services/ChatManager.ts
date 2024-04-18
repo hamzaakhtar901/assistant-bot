@@ -111,7 +111,14 @@ class ChatManager {
       // Run the assistant
       this.state.setStatusMessage('Running assistant...');
       this.state.threadId = threadId;
-      const runId = await runChatAssistant(this.state.assistantId, this.state.threadId);
+      const assistResp = await runChatAssistant(this.state.assistantId, this.state.threadId);
+      console.log('now runId')
+
+      if (!assistResp.success) {
+        console.log('now runChatAssistant -1', assistResp)
+      }
+
+      const runId = assistResp.response
       if (runId === null) {
         throw new Error('RunId is null');
       }
@@ -179,7 +186,13 @@ class ChatManager {
     this.state.setStatusMessage('Running assistant...');
     this.state.setProgress(30); // Set progress to 30%
     this.state.threadId = threadId;
-    const runId = await runChatAssistant(this.state.assistantId, this.state.threadId);
+    const assistResp = await runChatAssistant(this.state.assistantId, this.state.threadId);
+    if (!assistResp.success) {
+      console.log('now runChatAssistant -2', assistResp)
+      throw new Error('RunId is null');
+    }
+
+    const runId = assistResp.response
     if (runId === null) {
       throw new Error('RunId is null');
     }
@@ -263,8 +276,17 @@ class ChatManager {
       console.log('User message submitted. Running assistant...');
 
       // Run the assistant
-      this.state.runId = await runChatAssistant(this.state.assistantId as string, this.state.threadId as string);
-      console.log('Assistant run successfully. Fetching assistant response...');
+      const assistResp = await runChatAssistant(this.state.assistantId as string, this.state.threadId as string);
+      if (!assistResp.success) {
+        console.log('now runChatAssistant -3', assistResp)
+        const newAssistantMessage = { role: 'assistant', content: assistResp.response };
+        this.state.messages = [...this.state.messages, newAssistantMessage];
+        this.state.setChatMessages(this.state.messages);
+        return
+      }
+
+      this.state.runId = assistResp.response
+      console.log('Assistant run successfully. Fetching assistant response...', this.state.runId);
 
       // Fetch the assistant's response
       const response = await fetchAssistantResponse(this.state.runId as string, this.state.threadId as string, this.state.setStatusMessage, this.state.setProgress,0);

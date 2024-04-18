@@ -42,5 +42,6 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     // Log any errors that occur during the process
     console.error(`Error occurred: ${error}`);
+    return NextResponse.json({ error: error });
   }
 }

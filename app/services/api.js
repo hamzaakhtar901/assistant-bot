@@ -82,11 +82,15 @@ export const uploadImageAndGetDescription = async (base64Image) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ assistantId, threadId }),
     });
+    const data = await response.json();
+
     if (!response.ok) {
-      console.error('Failed to run assistant');
+      console.log('error response: ', response)
+      console.error('Failed to run assistant', response);
+      return data;
       throw new Error('Failed to run assistant');
     }
-    const data = await response.json();
+
     console.log('Assistant run successfully. Run ID:', data.runId);
     return data;
   };

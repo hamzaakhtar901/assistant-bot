@@ -8,6 +8,7 @@ import {
   createThread,
   runAssistant,
 } from '../services/api';
+import {NextResponse} from "next/server";
 
 interface AssistantDetails {
   assistantName: string;
@@ -157,13 +158,17 @@ export const createChatThread = async (inputMessage: string): Promise<string> =>
 * @param {string} threadId - The ID of the thread.
 * @returns {Promise<void>} - A promise that resolves when the assistant is successfully run.
 */
-export const runChatAssistant = async (assistantId: string, threadId: string): Promise<string | null> => {
+export const runChatAssistant = async (assistantId: string, threadId: string): Promise<any | null> => {
   
   console.log('Running chat assistant...');
 
   const response = await runAssistant(assistantId, threadId);
+  if (response.error) {
+    console.log('Error in app/modules/assistantModules- ', response.error.message)
+    return {success: false, response: `${response.error.error.message} This message thread has been blocked due to content policy violation. Please reload the page or contact the administrator.`}
+  }
   const runId = response.runId;
 
   console.log('Chat assistant run successfully. Run ID:', runId);
-  return runId; 
+  return {success: true, response: runId}
 };
