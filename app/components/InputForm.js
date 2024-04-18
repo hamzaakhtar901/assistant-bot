@@ -46,7 +46,7 @@ const InputForm = ({ input, setInput, handleFormSubmit, inputRef, formRef, disab
             className="w-full pr-20 pl-10 focus:outline-none" 
             disabled={disabled || !chatStarted}
           />
-          <input
+          {/*<input
             type="file"
             id="file-upload"
             style={{ display: 'none' }}
@@ -65,7 +65,7 @@ const InputForm = ({ input, setInput, handleFormSubmit, inputRef, formRef, disab
             )}
           >
             <span className="text-white text-lg">+</span>
-          </label>
+          </label>*/}
           <button
             className={clsx(
               "absolute inset-y-0 right-3 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all",
