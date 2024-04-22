@@ -19,7 +19,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const generateImage = async function (prompt: any) {
+/*const generateImage = async function (prompt: any) {
   const response = await openai.images.generate({
     model: "dall-e-3",
     prompt: prompt.prompt,
@@ -27,7 +27,7 @@ const generateImage = async function (prompt: any) {
   });
   console.log(`here are receive image urls: ${JSON.stringify(response.data)}`)
   return JSON.stringify({data: response.data});
-}
+}*/
 
 export async function POST(req: NextRequest) {
   try {
@@ -88,9 +88,9 @@ export async function POST(req: NextRequest) {
             // Dynamically call the function with arguments
             //const output = await global[functionName].apply(null, [args]);
             let output = '';
-            if (functionName == 'generateImage') {
+            /*if (functionName == 'generateImage') {
               output = await generateImage(args)
-            }
+            }*/
 
             toolOutputs.push({
               tool_call_id: toolCall.id,
